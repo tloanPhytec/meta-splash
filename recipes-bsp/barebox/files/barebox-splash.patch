@@ -252,7 +252,8 @@ index 0000000000..44cdb9f8f2
 @@ -0,0 +1,6 @@
 +#!/bin/sh
 +
-+splash logo/barebox-logo-64.png
++mount mmc0.1
++splash /mnt/mmc0.1/Phylogo.png
 +fb0.enable=1
 +pwm0.duty_ns=2500000
 +pwm0.enable=1
