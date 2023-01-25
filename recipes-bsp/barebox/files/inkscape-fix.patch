@@ -1,0 +1,22 @@
+diff --git a/lib/logo/Makefile b/lib/logo/Makefile
+index 4149d4ff6c..c29dffc502 100644
+--- a/lib/logo/Makefile
++++ b/lib/logo/Makefile
+@@ -39,14 +39,14 @@ cmd_logo_S =							\
+ 	$(call if_changed,logo_S)
+ 
+ # Inkscape 0.92.4 supports -z -e but Inkscape 1.0 uses --export-type=png
+-INKSCAPEOPTS += $(call try-run, inkscape -z -e -,-z -e -,--export-type=png)
++INKSCAPEOPTS += $(call try-run, /usr/bin/inkscape -z -e -,-z -e -,--export-type=png)
+ # Inkscape 1.0 supports -o -
+-INKSCAPEOPTS += $(call try-run, inkscape -o -,-o -,)
++INKSCAPEOPTS += $(call try-run, /usr/bin/inkscape -o -,-o -,)
+ 
+ quiet_cmd_logo = LOGO.S  $@
+ cmd_logo =							\
+ (								\
+-	inkscape $(OPTS_$(@F)) $(INKSCAPEOPTS) $< > $@; \
++	/usr/bin/inkscape $(OPTS_$(@F)) $(INKSCAPEOPTS) $< > $@; \
+ )
+ 
+ %.bblogo: $(srctree)/Documentation/barebox.svg FORCE

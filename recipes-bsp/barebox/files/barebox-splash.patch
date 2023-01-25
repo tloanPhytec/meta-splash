@@ -1,0 +1,258 @@
+diff --git a/arch/arm/configs/imx_v7_defconfig b/arch/arm/configs/imx_v7_defconfig
+index 1e7824d208..a36ef2f353 100644
+--- a/arch/arm/configs/imx_v7_defconfig
++++ b/arch/arm/configs/imx_v7_defconfig
+@@ -209,3 +209,18 @@ CONFIG_FS_FAT_LFN=y
+ CONFIG_FS_UBIFS=y
+ CONFIG_FS_UBIFS_COMPRESSION_LZO=y
+ CONFIG_PNG=y
++CONFIG_BAREBOX_LOGO=y
++CONFIG_BAREBOX_LOGO_64=y
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_VIDEO_VPL=y
++CONFIG_DRIVER_VIDEO_IMX_IPUV3=y
++CONFIG_DRIVER_VIDEO_IMX_IPUV3_LVDS=y
++CONFIG_DRIVER_VIDEO_IMX_IPUV3_HDMI=y
++CONFIG_DRIVER_VIDEO_IMX_IPUV3_PARALLEL=y
++CONFIG_DRIVER_VIDEO_SIMPLEFB_CLIENT=y
++CONFIG_DRIVER_VIDEO_SIMPLEFB=y
++CONFIG_DRIVER_VIDEO_EDID=y
++CONFIG_DRIVER_VIDEO_BACKLIGHT=y
++CONFIG_DRIVER_VIDEO_BACKLIGHT_PWM=y
++CONFIG_DRIVER_VIDEO_SIMPLE_PANEL=y
++CONFIG_CMD_SPLASH=y
++CONFIG_CMD_FBTEST=y
+diff --git a/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts b/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts
+index 864dc190bc..522b092b57 100644
+--- a/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts
++++ b/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts
+@@ -13,6 +13,7 @@
+ #include "imx6qdl-phytec-phycore-som.dtsi"
+ #include "imx6qdl-phytec-mira.dtsi"
+ #include "imx6qdl-phytec-state.dtsi"
++#include "imx6qdl-phytec-mira-peb-av-02.dtsi"
+ 
+ / {
+ 	model = "PHYTEC phyCORE-i.MX6 Quad with NAND";
+@@ -51,3 +52,23 @@
+ &usdhc1 {
+ 	status = "okay";
+ };
++
++&panel_lcd {
++	status = "okay";
++};
++
++&display {
++	status = "okay";
++};
++
++&backlight {
++	status = "okay";
++};
++
++&edt_ft5x06 {
++	status = "okay";
++};
++
++&pwm1 {
++	status = "okay";
++};
+diff --git a/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi b/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
+new file mode 100644
+index 0000000000..b44dd317b5
+--- /dev/null
++++ b/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
+@@ -0,0 +1,180 @@
++/ {
++        backlight: backlight {
++                compatible = "pwm-backlight";
++                brightness-levels = <0 4 8 16 32 64 128 255>;
++                default-brightness-level = <64>;
++                power-supply = <&reg_backlight>;
++                pwms = <&pwm1 0 5000000>;
++                status = "okay";
++        };
++
++	display: display@di0 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "fsl,imx-parallel-display";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_disp0>;
++		interface-pix-fmt = "rgb24";
++		status = "okay";
++
++		port@0 {
++			reg = <0>;
++
++			display0_in: endpoint {
++				remote-endpoint = <&ipu1_di0_disp0>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++
++			display0_out: endpoint {
++				remote-endpoint = <&peb_panel_lcd_in>;
++			};
++		};
++
++                display-timings {
++                        ac158 { /* edt,etm0700g0dh6 */
++                                clock-frequency = <33260000>;
++                                hactive = <800>;
++                                vactive = <480>;
++                                hfront-porch = <40>;
++                                hsync-len = <128>;
++                                hback-porch = <88>;
++                                vfront-porch = <10>;
++                                vsync-len = <2>;
++                                vback-porch = <33>;
++                                hsync-active = <0>;
++                                vsync-active = <0>;
++                                de-active = <1>;
++                                pixelclk-active = <1>;
++                        };
++                };
++	};
++
++	panel_lcd: panel-lcd {
++		compatible = "edt,etm0700g0edh6", "simple-panel";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_disp0_pwr>;
++		power-supply = <&reg_display>;
++		enable-gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>;
++		backlight = <&backlight>;
++		status = "okay";
++
++		port {
++			peb_panel_lcd_in: endpoint {
++				remote-endpoint = <&display0_out>;
++			};
++		};
++
++		display-timings {
++			ac158 { /* edt,etm0700g0dh6 */
++				clock-frequency = <33260000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <40>;
++				hsync-len = <128>;
++				hback-porch = <88>;
++				vfront-porch = <10>;
++				vsync-len = <2>;
++				vback-porch = <33>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <1>;
++				pixelclk-active = <1>;
++			};
++		};
++	};
++
++	reg_display: regulator-peb-display {
++		compatible = "regulator-fixed";
++		regulator-name = "peb-display";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++};
++
++&clks {
++        assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>,
++                          <&clks IMX6QDL_CLK_LDB_DI1_SEL>;
++        assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>,
++                                 <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
++};
++
++&i2c1 {
++	edt_ft5x06: polytouch@38 {
++		compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_edt_ft5x06>;
++		reg = <0x38>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <2 IRQ_TYPE_NONE>;
++		status = "okay";
++        };
++};
++
++&ipu1_di0_disp0 {
++	remote-endpoint = <&display0_in>;
++};
++
++&pwm1 {
++        #pwm-cells = <2>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_pwm1>;
++        status = "okay";
++};
++
++&iomuxc {
++	pinctrl_disp0: disp0grp {
++		fsl,pins = <
++			MX6QDL_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK	0x10
++			MX6QDL_PAD_DI0_PIN2__IPU1_DI0_PIN02		0x10
++			MX6QDL_PAD_DI0_PIN3__IPU1_DI0_PIN03		0x10
++
++			MX6QDL_PAD_DI0_PIN15__IPU1_DI0_PIN15		0x1b080
++
++			MX6QDL_PAD_DISP0_DAT0__IPU1_DISP0_DATA00	0x10
++			MX6QDL_PAD_DISP0_DAT1__IPU1_DISP0_DATA01	0x10
++			MX6QDL_PAD_DISP0_DAT2__IPU1_DISP0_DATA02	0x10
++			MX6QDL_PAD_DISP0_DAT3__IPU1_DISP0_DATA03	0x10
++			MX6QDL_PAD_DISP0_DAT4__IPU1_DISP0_DATA04	0x10
++			MX6QDL_PAD_DISP0_DAT5__IPU1_DISP0_DATA05	0x10
++			MX6QDL_PAD_DISP0_DAT6__IPU1_DISP0_DATA06	0x10
++			MX6QDL_PAD_DISP0_DAT7__IPU1_DISP0_DATA07	0x10
++			MX6QDL_PAD_DISP0_DAT8__IPU1_DISP0_DATA08	0x10
++			MX6QDL_PAD_DISP0_DAT9__IPU1_DISP0_DATA09	0x10
++			MX6QDL_PAD_DISP0_DAT10__IPU1_DISP0_DATA10	0x10
++			MX6QDL_PAD_DISP0_DAT11__IPU1_DISP0_DATA11	0x10
++			MX6QDL_PAD_DISP0_DAT12__IPU1_DISP0_DATA12	0x10
++			MX6QDL_PAD_DISP0_DAT13__IPU1_DISP0_DATA13	0x10
++			MX6QDL_PAD_DISP0_DAT14__IPU1_DISP0_DATA14	0x10
++			MX6QDL_PAD_DISP0_DAT15__IPU1_DISP0_DATA15	0x10
++			MX6QDL_PAD_DISP0_DAT16__IPU1_DISP0_DATA16	0x10
++			MX6QDL_PAD_DISP0_DAT17__IPU1_DISP0_DATA17	0x10
++			MX6QDL_PAD_DISP0_DAT18__IPU1_DISP0_DATA18	0x10
++			MX6QDL_PAD_DISP0_DAT19__IPU1_DISP0_DATA19	0x10
++			MX6QDL_PAD_DISP0_DAT20__IPU1_DISP0_DATA20	0x10
++			MX6QDL_PAD_DISP0_DAT21__IPU1_DISP0_DATA21	0x10
++			MX6QDL_PAD_DISP0_DAT22__IPU1_DISP0_DATA22	0x10
++			MX6QDL_PAD_DISP0_DAT23__IPU1_DISP0_DATA23	0x10
++		>;
++	};
++
++	pinctrl_disp0_pwr: disp0pwrgrp {
++		fsl,pins = <
++			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
++		>;
++	};
++
++	pinctrl_edt_ft5x06: edtft5x06grp {
++		fsl,pins = <
++			MX6QDL_PAD_EIM_DA2__GPIO3_IO02			0xb0b1
++		>;
++	};
++
++        pinctrl_pwm1: pwm1grp {
++                fsl,pins = <
++                        MX6QDL_PAD_GPIO_9__PWM1_OUT             0x1b0b1
++                >;
++        };
++};
+diff --git a/defaultenv/defaultenv-2-base/init/splash b/defaultenv/defaultenv-2-base/init/splash
+new file mode 100644
+index 0000000000..44cdb9f8f2
+--- /dev/null
++++ b/defaultenv/defaultenv-2-base/init/splash
+@@ -0,0 +1,6 @@
++#!/bin/sh
++
++splash logo/barebox-logo-64.png
++fb0.enable=1
++pwm0.duty_ns=2500000
++pwm0.enable=1
