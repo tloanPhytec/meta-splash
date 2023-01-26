@@ -1,3 +1,3 @@
 This meta layer serves as a reference for enabling a splash screen in the Barebox bootloader for the phyCORE-i.MX6 Mira development kit using the PEB-AV-02 parallel display. 
 
-Tested with PD21.1.1 software (barebox v2021.04.0-phy6)
+Tested with PD21.1.1 software (barebox v2021.04.0-phy6) which uses Yocto hardknott
