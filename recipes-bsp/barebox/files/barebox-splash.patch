@@ -1,8 +1,8 @@
 diff --git a/arch/arm/configs/imx_v7_defconfig b/arch/arm/configs/imx_v7_defconfig
-index 1e7824d208..a36ef2f353 100644
+index 53b64e15e7..1f060a38fc 100644
 --- a/arch/arm/configs/imx_v7_defconfig
 +++ b/arch/arm/configs/imx_v7_defconfig
-@@ -209,3 +209,18 @@ CONFIG_FS_FAT_LFN=y
+@@ -207,3 +207,18 @@ CONFIG_FS_FAT_LFN=y
  CONFIG_FS_UBIFS=y
  CONFIG_FS_UBIFS_COMPRESSION_LZO=y
  CONFIG_PNG=y
@@ -21,7 +21,6 @@ index 1e7824d208..a36ef2f353 100644
 +CONFIG_DRIVER_VIDEO_BACKLIGHT_PWM=y
 +CONFIG_DRIVER_VIDEO_SIMPLE_PANEL=y
 +CONFIG_CMD_SPLASH=y
-+CONFIG_CMD_FBTEST=y
 diff --git a/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts b/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts
 index 864dc190bc..522b092b57 100644
 --- a/arch/arm/dts/imx6q-phytec-phycore-som-nand.dts
@@ -60,10 +59,10 @@ index 864dc190bc..522b092b57 100644
 +};
 diff --git a/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi b/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
 new file mode 100644
-index 0000000000..b44dd317b5
+index 0000000000..60db932b69
 --- /dev/null
 +++ b/arch/arm/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
-@@ -0,0 +1,180 @@
+@@ -0,0 +1,162 @@
 +/ {
 +        backlight: backlight {
 +                compatible = "pwm-backlight";
@@ -130,24 +129,6 @@ index 0000000000..b44dd317b5
 +		port {
 +			peb_panel_lcd_in: endpoint {
 +				remote-endpoint = <&display0_out>;
-+			};
-+		};
-+
-+		display-timings {
-+			ac158 { /* edt,etm0700g0dh6 */
-+				clock-frequency = <33260000>;
-+				hactive = <800>;
-+				vactive = <480>;
-+				hfront-porch = <40>;
-+				hsync-len = <128>;
-+				hback-porch = <88>;
-+				vfront-porch = <10>;
-+				vsync-len = <2>;
-+				vback-porch = <33>;
-+				hsync-active = <0>;
-+				vsync-active = <0>;
-+				de-active = <1>;
-+				pixelclk-active = <1>;
 +			};
 +		};
 +	};
@@ -246,7 +227,7 @@ index 0000000000..b44dd317b5
 +};
 diff --git a/defaultenv/defaultenv-2-base/init/splash b/defaultenv/defaultenv-2-base/init/splash
 new file mode 100644
-index 0000000000..44cdb9f8f2
+index 0000000000..20a8268391
 --- /dev/null
 +++ b/defaultenv/defaultenv-2-base/init/splash
 @@ -0,0 +1,7 @@
@@ -257,4 +238,3 @@ index 0000000000..44cdb9f8f2
 +fb0.enable=1
 +pwm0.duty_ns=2500000
 +pwm0.enable=1
-
